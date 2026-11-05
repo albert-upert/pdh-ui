@@ -1,0 +1,19 @@
+node_modules
+.DS_Store
+dist-ssr
+*.local
+count.txt
+.env
+.env.*
+todos.json
+
+# Storybook
+*storybook.log
+storybook-static
+
+# AI local configuration
+.claude
+.trae
+
+# Build output
+dist

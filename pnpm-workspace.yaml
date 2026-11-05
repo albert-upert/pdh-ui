@@ -1,0 +1,26 @@
+packages:
+  - "."
+onlyBuiltDependencies:
+  - esbuild
+  - unrs-resolver
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
+
+# seroval (TanStack router SSR data, via the @tanstack/react-router peer) 1.6.12: past its XSS and
+# script-injection advisories (1.6.11+), same as teacher/student; 1.7.x is days old.
+overrides:
+  # Storybook build tooling (the deployed site is the Storybook build): same-major patched versions of
+  # packages that their parents' ranges hold back (high advisories, 2026-11-01).
+  "@isaacs/brace-expansion@<5.0.1": 5.0.1
+  browserslist@<4.28.7: 4.28.7
+  flatted@<3.4.2: 3.4.2
+  js-yaml@>=4.0.0 <4.3.2: 4.3.2
+  lodash@<4.18.0: 4.18.0
+  minimatch@<3.1.4: 3.1.4
+  minimatch@>=9.0.0 <9.0.7: 9.0.7
+  minimatch@>=10.0.0 <10.2.3: 10.2.3
+  picomatch@<2.3.2: 2.3.2
+  picomatch@>=4.0.0 <4.0.4: 4.0.4
+  seroval: 1.6.12
+  seroval-plugins: 1.6.12

@@ -1,0 +1,33 @@
+stages:
+  - deploy
+
+variables:
+  IMAGE_NAME: pdh-ui
+  NAMESPACE: digitaltwin
+
+deploy:
+  stage: deploy
+  # one deploy per environment at a time: parallel deploys raced (workers #3445/#3446)
+  resource_group: deploy-dev
+  tags:
+    - digitaltwin-shell
+  script:
+    - sudo docker pull --platform linux/amd64 node:22-alpine 2>/dev/null || true
+    - sudo env DOCKER_BUILDKIT=0 docker build
+      --platform linux/amd64
+      --pull=false
+      -f Dockerfile.k8s
+      -t $IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+      -t $IMAGE_NAME:latest
+      .
+    - sudo docker save $IMAGE_NAME:latest -o /tmp/$IMAGE_NAME.tar
+    - sudo k3s ctr images import /tmp/$IMAGE_NAME.tar
+    - sudo rm -f /tmp/$IMAGE_NAME.tar
+
+    - sudo kubectl apply -f k8s/namespace.yaml
+    - sudo kubectl apply -f k8s/deployment.yaml
+    - sudo kubectl apply -f k8s/service.yaml
+    - sudo kubectl rollout restart deployment/pdh-ui -n $NAMESPACE
+    - sudo kubectl rollout status deployment/pdh-ui -n $NAMESPACE --timeout=180s
+  only:
+    - main
