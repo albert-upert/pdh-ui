@@ -124,7 +124,7 @@ export function TableHead({ className, ...props }: ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "px-3 py-5 text-sm font-semibold [&:has([role=checkbox])]:pr-0 text-center align-middle font-['Poppins'] whitespace-nowrap text-foreground",
+        "px-3 py-5 text-sm font-semibold [&:has([role=checkbox])]:pr-0 text-center align-middle font-sans whitespace-nowrap text-foreground",
         className
       )}
       {...props}
@@ -137,7 +137,7 @@ export function TableCell({ className, ...props }: ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "px-2 py-3 text-xs [&:has([role=checkbox])]:pr-0 text-center align-middle font-['Poppins'] whitespace-nowrap",
+        "px-2 py-3 text-xs [&:has([role=checkbox])]:pr-0 text-center align-middle font-sans whitespace-nowrap",
         className
       )}
       {...props}

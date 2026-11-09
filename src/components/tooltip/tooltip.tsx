@@ -53,7 +53,7 @@ export function Tooltip({
               className
             )}
           >
-            <p className="text-xs leading-5 text-white font-['Poppins'] whitespace-pre-wrap">
+            <p className="text-xs leading-5 text-white font-sans whitespace-pre-wrap">
               {content}
             </p>
             <RadixTooltip.Arrow

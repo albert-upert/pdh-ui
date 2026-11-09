@@ -137,17 +137,17 @@ export const WithCustomHeader: Story = {
   render: () => (
     <TableWithCustomHeader>
       <TableCustomHeader>
-        <p className="text-base leading-6 font-bold font-['Poppins'] text-foreground">
+        <p className="text-base leading-6 font-bold font-sans text-foreground">
           Mata Kuliah [Menunggu Persetujuan]
         </p>
         <div className="gap-5 flex items-center">
           <button
             disabled
-            className="h-10 px-4 py-2 text-base rounded-lg bg-gray-200 font-['Poppins'] text-gray-500"
+            className="h-10 px-4 py-2 text-base rounded-lg bg-gray-200 font-sans text-gray-500"
           >
             Setujui
           </button>
-          <button className="h-10 bg-white px-4 py-2 text-base rounded-lg border border-gray-300 font-['Poppins']">
+          <button className="h-10 bg-white px-4 py-2 text-base rounded-lg border border-gray-300 font-sans">
             Tolak Pengajuan
           </button>
         </div>
@@ -216,14 +216,14 @@ export const CustomHeaderOnly: Story = {
   render: () => (
     <div className="rounded-xl border">
       <TableCustomHeader>
-        <p className="text-base leading-6 font-bold font-['Poppins'] text-foreground">
+        <p className="text-base leading-6 font-bold font-sans text-foreground">
           Daftar Mahasiswa
         </p>
         <div className="gap-5 flex items-center">
-          <button className="h-10 px-4 py-2 text-base text-white rounded-lg bg-primary font-['Poppins']">
+          <button className="h-10 px-4 py-2 text-base text-white rounded-lg bg-primary font-sans">
             Tambah
           </button>
-          <button className="h-10 bg-white px-4 py-2 text-base rounded-lg border border-gray-300 font-['Poppins']">
+          <button className="h-10 bg-white px-4 py-2 text-base rounded-lg border border-gray-300 font-sans">
             Export
           </button>
         </div>

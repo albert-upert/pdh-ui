@@ -25,7 +25,7 @@ function Toaster({ ...props }: ToasterProps) {
       toastOptions={{
         classNames: {
           toast: cn(
-            "gap-2 px-4 py-3 text-base leading-6 text-white flex w-[690px] items-start rounded-2xl font-['Poppins'] shadow-[0px_16px_36px_0px_rgba(61,65,81,0.1)]"
+            "gap-2 px-4 py-3 text-base leading-6 text-white flex w-[690px] items-start rounded-2xl font-sans shadow-[0px_16px_36px_0px_rgba(61,65,81,0.1)]"
           ),
           title: "flex-1 whitespace-pre-wrap",
           description: "flex-1 whitespace-pre-wrap",
