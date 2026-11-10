@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useCallback, useState } from "react";
 import type { FormEvent } from "react";
+import { Block, BlockTitle } from "@/components/block";
+import { List, ListItem } from "@/components/list";
 import { Checkbox } from "./checkbox";
 
 const meta = {
@@ -525,4 +527,134 @@ export const AllVariations: Story = {
       </div>
     </div>
   ),
+};
+
+/**
+ * Gaya Konsta: checkbox inline di dalam teks, kelompok di `List`, status
+ * setengah terpilih, dan di dalam daftar media. Ganti "Style" di toolbar.
+ */
+export const Mobile: Story = {
+  render: () => {
+    const [a, setA] = useState(false);
+    const [b, setB] = useState(true);
+    const [group, setGroup] = useState<string[]>(["Buku"]);
+    const [movies, setMovies] = useState<string[]>(["Film 1"]);
+    const [media, setMedia] = useState<string[]>(["Item 1"]);
+
+    const toggle = (
+      list: string[],
+      set: (v: string[]) => void,
+      value: string
+    ) =>
+      set(
+        list.includes(value)
+          ? list.filter((v) => v !== value)
+          : [...list, value]
+      );
+
+    const allMovies = ["Film 1", "Film 2"];
+    const onMoviesChange = () =>
+      setMovies(movies.length === allMovies.length ? [] : allMovies);
+
+    return (
+      <div className="w-[360px]">
+        <BlockTitle>Inline</BlockTitle>
+        <Block strong inset>
+          <p>
+            Lorem <Checkbox checked={a} onCheckedChange={setA} /> ipsum dolor
+            sit amet, consectetur adipisicing elit. Alias beatae illo nihil aut
+            eius commodi <Checkbox checked={b} onCheckedChange={setB} /> ad
+            delectus impedit tempore nemo.
+          </p>
+        </Block>
+
+        <BlockTitle>Checkbox Group</BlockTitle>
+        <List strong inset>
+          {["Buku", "Film", "Makanan", "Minuman"].map((item) => (
+            <ListItem
+              key={item}
+              label
+              title={item}
+              media={
+                <Checkbox
+                  component="div"
+                  checked={group.includes(item)}
+                  onCheckedChange={() => toggle(group, setGroup, item)}
+                />
+              }
+            />
+          ))}
+        </List>
+
+        <BlockTitle>Indeterminate State</BlockTitle>
+        <List strong inset>
+          <ListItem
+            label
+            title="Film"
+            media={
+              <Checkbox
+                component="div"
+                checked={movies.length === allMovies.length}
+                indeterminate={
+                  movies.length > 0 && movies.length < allMovies.length
+                }
+                onCheckedChange={onMoviesChange}
+              />
+            }
+          >
+            <ul className="ps-12">
+              {allMovies.map((movie) => (
+                <ListItem
+                  key={movie}
+                  label
+                  title={movie}
+                  media={
+                    <Checkbox
+                      component="div"
+                      checked={movies.includes(movie)}
+                      onCheckedChange={() => toggle(movies, setMovies, movie)}
+                    />
+                  }
+                />
+              ))}
+            </ul>
+          </ListItem>
+        </List>
+
+        <BlockTitle>With Media Lists</BlockTitle>
+        <List strong inset>
+          {[
+            {
+              id: "Item 1",
+              title: "Facebook",
+              after: "17:14",
+              subtitle: "Pesan baru dari John Doe",
+            },
+            {
+              id: "Item 2",
+              title: "John Doe (via Twitter)",
+              after: "17:11",
+              subtitle: "John Doe (@_johndoe) menyebut Anda di Twitter!",
+            },
+          ].map((item) => (
+            <ListItem
+              key={item.id}
+              label
+              title={item.title}
+              after={item.after}
+              subtitle={item.subtitle}
+              text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sagittis tellus ut turpis condimentum, ut dignissim lacus tincidunt."
+              media={
+                <Checkbox
+                  component="div"
+                  checked={media.includes(item.id)}
+                  onCheckedChange={() => toggle(media, setMedia, item.id)}
+                />
+              }
+            />
+          ))}
+        </List>
+      </div>
+    );
+  },
 };

@@ -1,73 +1,115 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
-import Breadcrumb from "./breadcrumb";
+import { useState } from "react";
+import { Block, BlockTitle } from "@/components/block";
+import { List, ListItem } from "@/components/list";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
+import {
+  Breadcrumbs,
+  BreadcrumbsCollapsed,
+  BreadcrumbsItem,
+  BreadcrumbsSeparator,
+} from "./breadcrumb";
 
 const meta = {
   title: "Components/Breadcrumb",
-  component: Breadcrumb,
-  parameters: {
-    layout: "centered",
-  },
+  component: Breadcrumbs,
+  parameters: { layout: "centered" },
   tags: ["autodocs"],
-  argTypes: {
-    items: {
-      control: "object",
-      description: "Array of breadcrumb items with label and optional href",
-    },
-    onItemClick: {
-      action: "itemClicked",
-      description: "Callback fired when a breadcrumb item is clicked",
-    },
-  },
-} satisfies Meta<typeof Breadcrumb>;
+} satisfies Meta<typeof Breadcrumbs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Ganti "Style" di toolbar Storybook untuk membandingkan iOS dan Material. */
 export const Default: Story = {
-  args: {
-    items: [
-      { label: "Beranda", href: "/" },
-      { label: "Konfigurasi", href: "/konfigurasi" },
-      { label: "Pengumuman" },
-    ],
-    onItemClick: fn(),
+  render: () => (
+    <Breadcrumbs>
+      <BreadcrumbsItem asChild>
+        <a href="#">Beranda</a>
+      </BreadcrumbsItem>
+      <BreadcrumbsSeparator />
+      <BreadcrumbsItem asChild>
+        <a href="#">Katalog</a>
+      </BreadcrumbsItem>
+      <BreadcrumbsSeparator />
+      <BreadcrumbsItem active>iPhone 12</BreadcrumbsItem>
+    </Breadcrumbs>
+  ),
+};
+
+export const Scrollable: Story = {
+  render: () => (
+    <div className="w-64">
+      <Breadcrumbs>
+        <BreadcrumbsItem asChild>
+          <a href="#">Beranda</a>
+        </BreadcrumbsItem>
+        <BreadcrumbsSeparator />
+        <BreadcrumbsItem asChild>
+          <a href="#">Katalog</a>
+        </BreadcrumbsItem>
+        <BreadcrumbsSeparator />
+        <BreadcrumbsItem asChild>
+          <a href="#">Ponsel</a>
+        </BreadcrumbsItem>
+        <BreadcrumbsSeparator />
+        <BreadcrumbsItem asChild>
+          <a href="#">Apple</a>
+        </BreadcrumbsItem>
+        <BreadcrumbsSeparator />
+        <BreadcrumbsItem active>iPhone 12</BreadcrumbsItem>
+      </Breadcrumbs>
+    </div>
+  ),
+};
+
+/** Tingkat tengah diringkas; klik titik-titik untuk membuka popover. */
+export const Collapsed: Story = {
+  render: () => {
+    const [open, setOpen] = useState(false);
+
+    return (
+      <Breadcrumbs>
+        <BreadcrumbsItem asChild>
+          <a href="#">Beranda</a>
+        </BreadcrumbsItem>
+        <BreadcrumbsSeparator />
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <BreadcrumbsCollapsed />
+          </PopoverTrigger>
+          <PopoverContent className="w-32">
+            <List className="my-0">
+              {["Katalog", "Ponsel", "Apple"].map((title) => (
+                <ListItem
+                  key={title}
+                  title={title}
+                  onClick={() => setOpen(false)}
+                />
+              ))}
+            </List>
+          </PopoverContent>
+        </Popover>
+        <BreadcrumbsSeparator />
+        <BreadcrumbsItem active>iPhone 12</BreadcrumbsItem>
+      </Breadcrumbs>
+    );
   },
 };
 
-export const TwoLevels: Story = {
-  args: {
-    items: [{ label: "Beranda", href: "/" }, { label: "Dashboard" }],
-    onItemClick: fn(),
-  },
-};
-
-export const FourLevels: Story = {
-  args: {
-    items: [
-      { label: "Beranda", href: "/" },
-      { label: "Konfigurasi", href: "/konfigurasi" },
-      { label: "User Management", href: "/konfigurasi/user-management" },
-      { label: "Detail" },
-    ],
-    onItemClick: fn(),
-  },
-};
-
-export const SingleLevel: Story = {
-  args: {
-    items: [{ label: "Beranda" }],
-    onItemClick: fn(),
-  },
-};
-
-export const WithoutLinks: Story = {
-  args: {
-    items: [
-      { label: "Beranda" },
-      { label: "Konfigurasi" },
-      { label: "Pengumuman" },
-    ],
-    onItemClick: fn(),
-  },
+export const InBlock: Story = {
+  render: () => (
+    <div className="w-80">
+      <BlockTitle>Dasar</BlockTitle>
+      <Block strong outline>
+        <Breadcrumbs>
+          <BreadcrumbsItem asChild>
+            <a href="#">Beranda</a>
+          </BreadcrumbsItem>
+          <BreadcrumbsSeparator />
+          <BreadcrumbsItem active>Pengumuman</BreadcrumbsItem>
+        </Breadcrumbs>
+      </Block>
+    </div>
+  ),
 };

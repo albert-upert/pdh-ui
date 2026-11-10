@@ -101,7 +101,7 @@ The mobile components (`Page`, `Navbar`, `Toolbar`, `Tabbar`, `Sheet`, `List`, `
 | Component  | Import Path          | Description                                                                |
 | ---------- | -------------------- | -------------------------------------------------------------------------- |
 | Accordion  | `pdh-ui/accordion`   | Collapsible content sections                                               |
-| Breadcrumb | `pdh-ui/breadcrumb`  | Navigation breadcrumb trail                                                |
+| Breadcrumb | `pdh-ui/breadcrumb`  | Breadcrumbs, BreadcrumbsItem, BreadcrumbsSeparator, BreadcrumbsCollapsed   |
 | Button     | `pdh-ui/button`      | Button with multiple variants                                              |
 | Calendar   | `pdh-ui/calendar`    | Schedule calendar with daily/weekly/monthly/yearly views                   |
 | Callout    | `pdh-ui/callout`     | Informational callout box                                                  |

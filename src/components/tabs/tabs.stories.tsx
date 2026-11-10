@@ -1,10 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { Block } from "@/components/block";
 import {
   AttendanceIcon,
   DashboardIcon,
   GradeIcon,
   ScheduleIcon,
 } from "@/components/icon";
+import { List, ListItem } from "@/components/list";
+import { Switch } from "@/components/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 const meta = {
@@ -150,6 +154,65 @@ export const PillTabs: Story = {
   ),
 };
 
+/**
+ * Pill tabs gaya Konsta `Tabbar`: iOS kapsul kaca dengan tab aktif berkapsul tipis,
+ * Material bilah `card` dengan kapsul `primary` transparan. Ganti "Style" di toolbar.
+ */
+export const PillTabsMobile: Story = {
+  render: () => {
+    const [labels, setLabels] = useState(true);
+    const [icons, setIcons] = useState(true);
+    const items = [
+      { value: "tab1", label: "Dasbor", icon: DashboardIcon },
+      { value: "tab2", label: "Nilai", icon: GradeIcon },
+      { value: "tab3", label: "Absensi", icon: AttendanceIcon },
+    ];
+
+    return (
+      <Tabs defaultValue="tab1" className="w-[360px]">
+        <List strong inset>
+          <ListItem
+            title="Label tab"
+            after={<Switch checked={labels} onCheckedChange={setLabels} />}
+          />
+          <ListItem
+            title="Ikon tab"
+            after={<Switch checked={icons} onCheckedChange={setIcons} />}
+          />
+        </List>
+
+        <div className="px-4">
+          <TabsList variant="pill">
+            {items.map(({ value, label, icon: Icon }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                variant="pill"
+                stacked={icons && labels}
+                aria-label={label}
+              >
+                {icons && <Icon className="size-6" />}
+                {labels && label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+
+        {items.map(({ value, label }) => (
+          <TabsContent key={value} value={value} variant="pill">
+            <Block strong inset>
+              <b>{label}</b>
+              <p className="mt-2">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias
+                accusantium necessitatibus, nihil quas praesentium at quibusdam.
+              </p>
+            </Block>
+          </TabsContent>
+        ))}
+      </Tabs>
+    );
+  },
+};
 export const FolderTabs: Story = {
   render: () => (
     <Tabs defaultValue="tab1" className="w-[600px]">

@@ -1,5 +1,6 @@
 import { Tabs as RadixTabs } from "radix-ui";
 import type { ComponentProps } from "react";
+import { glassIosClassName } from "@/components/glass";
 import { cn } from "@/lib/utils";
 
 export function Tabs({
@@ -28,10 +29,15 @@ export function TabsList({
       data-variant={variant}
       className={cn(
         "gap-0 inline-flex items-center text-foreground",
+        // Underline: garis pemisah tipis, indikator ada di setiap tab
         variant === "underline" && "border-b border-border",
-        // pill = Segmented Konsta: iOS rounded-lg, Material rounded-full
-        variant === "pill" &&
-          "gap-2 p-1 bg-muted ios:rounded-lg material:rounded-full",
+        // Pill (Tabbar Konsta): iOS kapsul kaca, Material bilah berlatar card
+        variant === "pill" && [
+          "gap-1 rounded-full",
+          glassIosClassName,
+          "ios:p-1 material:px-2 material:shadow-sm material:bg-card",
+        ],
+        // Folder: garis dasar primary, tab aktif "menyatu" dengan konten
         variant === "folder" && "w-full border-b border-primary",
         className
       )}
@@ -43,33 +49,47 @@ export function TabsList({
 export function TabsTrigger({
   className,
   variant = "underline",
+  stacked = false,
   ...props
 }: ComponentProps<typeof RadixTabs.Trigger> & {
   variant?: "underline" | "pill" | "folder";
+  /** Ikon di atas, label di bawah (seperti `TabbarLink`). Untuk semua varian. */
+  stacked?: boolean;
 }) {
   return (
     <RadixTabs.Trigger
       data-slot="tabs-trigger"
       data-variant={variant}
       className={cn(
-        "gap-2 font-normal material:text-sm inline-flex items-center justify-center whitespace-nowrap text-muted-foreground transition-all ios:text-[15px]",
-        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
+        "relative inline-flex cursor-pointer items-center justify-center whitespace-nowrap select-none",
+        "font-medium material:text-sm transition-colors ios:text-[15px]",
+        stacked ? "gap-0.5 text-xs flex-col" : "gap-2",
+        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
         "disabled:pointer-events-none disabled:opacity-50",
-        "hover:text-foreground",
-        // Underline variant (default)
+        // Underline: teks primary + indikator di bawah (iOS tipis, Material 3 px berujung bulat)
         variant === "underline" && [
-          "px-4 py-3 -mb-px border-b-2 border-transparent",
-          "data-[state=active]:font-bold data-[state=active]:border-primary data-[state=active]:text-primary",
+          "px-4 py-3 -mb-px",
+          "after:bottom-0 after:h-0.5 after:pointer-events-none after:absolute after:rounded-full after:bg-transparent after:transition-colors",
+          "ios:after:inset-x-3 material:after:inset-x-0 material:after:h-[3px] material:after:rounded-b-none",
+          "ios:data-[state=inactive]:text-muted-foreground material:data-[state=inactive]:text-muted-foreground",
+          "ios:data-[state=active]:font-semibold data-[state=active]:text-primary data-[state=active]:after:bg-primary",
+          "ios:active:opacity-50 material:rounded-t-lg material:hover:bg-primary/8",
         ],
-        // Pill variant
+        // Pill (gaya TabbarLink Konsta)
         variant === "pill" && [
-          "px-6 py-2 font-bold ios:rounded-md material:rounded-full",
-          "data-[state=active]:shadow-sm data-[state=active]:bg-background data-[state=active]:text-primary",
+          "rounded-full",
+          stacked ? "px-4 py-1" : "px-4 py-2",
+          // iOS: aktif = teks primary di atas kapsul tipis
+          "ios:data-[state=active]:bg-black/10 ios:dark:data-[state=active]:bg-white/15 ios:data-[state=inactive]:text-foreground",
+          // Material: aktif = kapsul primary transparan
+          "material:data-[state=active]:bg-primary/15 material:data-[state=inactive]:text-muted-foreground",
+          "data-[state=active]:text-primary",
         ],
-        // Folder variant
+        // Folder: tab aktif berupa kartu yang menutup garis dasar
         variant === "folder" && [
-          "px-10 py-2.5 bg-transparent",
-          "data-[state=active]:bg-white data-[state=active]:font-bold data-[state=active]:-mb-px data-[state=active]:rounded-t-xl data-[state=active]:border-x data-[state=active]:border-t data-[state=active]:border-primary data-[state=active]:text-primary",
+          "px-10 py-2.5 ios:rounded-t-2xl material:rounded-t-xl",
+          "data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground",
+          "ios:data-[state=active]:font-semibold data-[state=active]:-mb-px data-[state=active]:border-x data-[state=active]:border-t data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary",
         ],
         className
       )}
@@ -77,7 +97,6 @@ export function TabsTrigger({
     />
   );
 }
-
 export function TabsContent({
   className,
   variant = "underline",

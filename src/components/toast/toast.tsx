@@ -1,6 +1,12 @@
-import type { CSSProperties, ReactElement } from "react";
+import type {
+  ComponentProps,
+  CSSProperties,
+  ReactElement,
+  ReactNode,
+} from "react";
 import { Toaster as ToasterPrimitive, toast as sonnerToast } from "sonner";
 import type { ExternalToast, ToasterProps } from "sonner";
+import { Glass } from "@/components/glass";
 import { cn } from "@/lib/utils";
 
 type ToastOptions = ExternalToast & {
@@ -114,4 +120,67 @@ const toast = {
   dismiss: sonnerToast.dismiss,
 };
 
-export { Toaster, toast };
+export interface ToastProps extends Omit<ComponentProps<"div">, "children"> {
+  /** Tampil atau tersembunyi. Kendalikan dari luar, mis. dengan `useState`. */
+  opened?: boolean;
+  /** Posisi horizontal di bagian bawah layar. */
+  position?: "left" | "center" | "right";
+  /** Tombol di kanan pesan, mis. `<Button variant="tertiary" size="sm">Tutup</Button>`. */
+  button?: ReactNode;
+  children?: ReactNode;
+}
+
+const TOAST_POSITION = {
+  left: "justify-start",
+  center: "justify-center",
+  right: "justify-end",
+} as const;
+
+/**
+ * Toast deklaratif (Konsta `Toast`): muncul dari bawah saat `opened`.
+ * Gunakan `toast.*` + `Toaster` bila butuh antrean otomatis tanpa state.
+ * iOS: kapsul kaca. Material: panel `card` dengan teks primary.
+ */
+function Toast({
+  className,
+  opened = false,
+  position = "left",
+  button,
+  children,
+  ...props
+}: ToastProps) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      aria-hidden={!opened}
+      inert={!opened}
+      data-slot="toast"
+      data-state={opened ? "open" : "closed"}
+      className={cn(
+        "inset-x-4 fixed bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex transition-[transform,opacity]",
+        "ios:duration-300 material:duration-200",
+        TOAST_POSITION[position],
+        !opened && "pointer-events-none translate-y-full opacity-0",
+        className
+      )}
+      {...props}
+    >
+      <Glass
+        className={cn(
+          "max-w-lg rounded-2xl text-foreground",
+          "material:shadow-lg material:border material:border-border material:text-primary"
+        )}
+      >
+        <div className="px-4 py-3 material:px-6 material:py-3.5 flex items-center justify-between">
+          {children}
+          {button && (
+            <div className="-my-2 ms-4 material:-me-2 shrink-0">{button}</div>
+          )}
+        </div>
+      </Glass>
+    </div>
+  );
+}
+
+export { Toast, Toaster, toast };

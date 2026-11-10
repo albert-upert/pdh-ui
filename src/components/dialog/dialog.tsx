@@ -1,14 +1,149 @@
 import { Dialog as DialogPrimitive } from "radix-ui";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { Button } from "@/components/button";
+import { glassIosClassName } from "@/components/glass";
 import { CloseIcon } from "@/components/icon";
 import Typography from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
 
+export interface DialogProps extends Omit<
+  ComponentProps<typeof DialogPrimitive.Root>,
+  "children"
+> {
+  children?: ReactNode;
+  /** Mode Konsta: tampil atau tersembunyi. Kendalikan dari luar, mis. dengan `useState`. */
+  opened?: boolean;
+  /** Mode Konsta: dipanggil saat latar ditekan atau Escape ditekan. Tutup dialog di sini. */
+  onBackdropClick?: () => void;
+  /** Mode Konsta: judul. */
+  title?: ReactNode;
+  /** Mode Konsta: isi, bisa teks atau elemen (mis. `List`). */
+  content?: ReactNode;
+  /** Mode Konsta: tombol di bawah, gunakan `DialogButton`. */
+  buttons?: ReactNode;
+  /** Mode Konsta: className untuk panel dialog. */
+  className?: string;
+}
+
+/**
+ * Dialog. Dua cara pakai:
+ * 1. Gaya Konsta (kontrol dari luar): `<Dialog opened title content buttons onBackdropClick />`
+ * 2. Gaya Radix (komposisi): `<Dialog><DialogTrigger /><DialogContent /></Dialog>`
+ *
+ * iOS: kaca `rounded-4xl` lebar 300 px, tombol tonal berdampingan.
+ * Material: panel `card` `rounded-[1.75rem]` lebar 312 px, tombol teks rata kanan.
+ */
 export function Dialog({
+  opened,
+  onBackdropClick,
+  onOpenChange,
+  title,
+  content,
+  buttons,
+  className,
+  children,
   ...props
-}: ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="Dialog" {...props} />;
+}: DialogProps) {
+  const konsta =
+    opened !== undefined ||
+    title !== undefined ||
+    content !== undefined ||
+    buttons !== undefined;
+
+  if (!konsta) {
+    return (
+      <DialogPrimitive.Root
+        data-slot="Dialog"
+        onOpenChange={onOpenChange}
+        {...props}
+      >
+        {children}
+      </DialogPrimitive.Root>
+    );
+  }
+
+  return (
+    <DialogPrimitive.Root
+      data-slot="Dialog"
+      open={opened}
+      onOpenChange={(open) => {
+        onOpenChange?.(open);
+        if (!open) onBackdropClick?.();
+      }}
+      {...props}
+    >
+      <DialogPortal>
+        <DialogPrimitive.Overlay
+          data-slot="Dialog-overlay"
+          className="inset-0 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0 fixed z-50 duration-300"
+        />
+        <DialogPrimitive.Content
+          data-slot="Dialog-content"
+          aria-describedby={undefined}
+          className={cn(
+            "fixed top-1/2 left-1/2 z-50 max-h-full -translate-x-1/2 -translate-y-1/2 overflow-hidden text-foreground outline-none",
+            "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 duration-200",
+            glassIosClassName,
+            "ios:w-75 ios:max-w-full ios:rounded-4xl",
+            "material:w-78 material:p-6 material:shadow-xl material:max-w-[90%] material:rounded-[1.75rem] material:bg-card",
+            className
+          )}
+        >
+          <div className="gap-3 ios:p-6 flex flex-col ios:items-center ios:text-center">
+            {title ? (
+              <DialogPrimitive.Title className="font-semibold material:text-2xl material:font-normal w-full ios:text-[17px]">
+                {title}
+              </DialogPrimitive.Title>
+            ) : (
+              <DialogPrimitive.Title className="sr-only">
+                Dialog
+              </DialogPrimitive.Title>
+            )}
+            {(content || children) && (
+              <div className="text-sm w-full material:text-muted-foreground">
+                {content}
+                {children}
+              </div>
+            )}
+          </div>
+          {buttons && (
+            <div className="gap-2 ios:p-3.5 ios:pt-0 material:pt-6 flex items-center ios:justify-center material:justify-end">
+              {buttons}
+            </div>
+          )}
+        </DialogPrimitive.Content>
+      </DialogPortal>
+    </DialogPrimitive.Root>
+  );
+}
+
+export interface DialogButtonProps extends ComponentProps<"button"> {
+  /** Tombol utama (terisi `primary`). Tanpa ini: tonal di iOS, teks di Material. */
+  strong?: boolean;
+}
+
+/** Tombol pada `Dialog` (Konsta `DialogButton`). Tidak menutup dialog otomatis: tutup lewat `onClick`. */
+export function DialogButton({
+  className,
+  strong = false,
+  ...props
+}: DialogButtonProps) {
+  return (
+    <button
+      type="button"
+      data-slot="Dialog-button"
+      className={cn(
+        "inline-flex cursor-pointer items-center justify-center duration-100 select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+        "ios:h-12 ios:font-semibold ios:flex-1 ios:rounded-sm ios:text-[17px]",
+        "material:h-10 material:px-4 material:text-sm material:font-medium material:rounded-full",
+        strong
+          ? "bg-primary text-primary-foreground hover:brightness-95 active:brightness-90"
+          : "text-primary ios:bg-primary/10 ios:active:bg-primary/20 material:hover:bg-primary/10 material:active:bg-primary/15",
+        className
+      )}
+      {...props}
+    />
+  );
 }
 
 export function DialogTrigger({

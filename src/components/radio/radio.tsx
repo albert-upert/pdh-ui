@@ -34,10 +34,24 @@ export interface RadioProps
     Omit<ComponentProps<"input">, "size" | "type">,
     VariantProps<typeof radioVariants> {
   onValueChange?: (checked: boolean) => void;
+  /** Elemen pembungkus. Bawaan `div`, aman dipakai di dalam `<ListItem label>`. */
+  component?: "label" | "div";
 }
 
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(
-  ({ className, size, checked, onValueChange, disabled, ...props }, ref) => {
+  (
+    {
+      className,
+      size,
+      checked,
+      onChange,
+      onValueChange,
+      component = "div",
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
     const [isChecked, setIsChecked] = useState(checked || false);
 
     const handleChange = useCallback(
@@ -45,9 +59,9 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         const newChecked = event.target.checked;
         setIsChecked(newChecked);
         onValueChange?.(newChecked);
-        props.onChange?.(event);
+        onChange?.(event);
       },
-      [onValueChange, props]
+      [onValueChange, onChange]
     );
 
     useEffect(() => {
@@ -56,8 +70,10 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       }
     }, [checked]);
 
+    const Wrapper = component;
+
     return (
-      <div className="relative inline-flex items-center">
+      <Wrapper className="relative inline-flex items-center">
         <input
           ref={ref}
           type="radio"
@@ -98,7 +114,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
             </>
           )}
         </div>
-      </div>
+      </Wrapper>
     );
   }
 );

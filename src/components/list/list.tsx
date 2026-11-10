@@ -64,6 +64,11 @@ export interface ListItemProps extends Omit<ComponentProps<"div">, "title"> {
   strongTitle?: boolean;
   /** Tampilkan panah di kanan. */
   chevron?: boolean;
+  /**
+   * Baris menjadi `<label>`: menekan di mana saja memicu kontrol di dalamnya
+   * (mis. `Checkbox` atau `Radio` pada `media`).
+   */
+  label?: boolean;
   /** Gabungkan perilaku ke elemen anak (misalnya `<a>` atau `Link`). */
   asChild?: boolean;
 }
@@ -84,12 +89,16 @@ export function ListItem({
   strongTitle = false,
   chevron = false,
   asChild = false,
+  label = false,
+  children,
   onClick,
   ...props
 }: ListItemProps) {
-  const interactive = !!onClick || asChild;
-  const Comp = (asChild ? Slot.Root : onClick ? "button" : "div") as "div";
-  const buttonProps = onClick && !asChild ? { type: "button" } : {};
+  const interactive = !!onClick || asChild || label;
+  const Comp = (
+    asChild ? Slot.Root : label ? "label" : onClick ? "button" : "div"
+  ) as "div";
+  const buttonProps = onClick && !asChild && !label ? { type: "button" } : {};
 
   return (
     <li data-slot="list-item" className="group/item list-none">
@@ -137,6 +146,7 @@ export function ListItem({
           )}
         </div>
       </Comp>
+      {children}
     </li>
   );
 }

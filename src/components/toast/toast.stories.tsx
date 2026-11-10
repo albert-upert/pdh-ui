@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import type { FormEvent } from "react";
+import { Block } from "@/components/block";
 import { Button } from "@/components/button";
-import { Toaster, toast } from "./toast";
+import { Toast, Toaster, toast } from "./toast";
 
 const meta = {
   title: "Components/Toast",
@@ -619,6 +620,51 @@ export const InteractiveDemo: Story = {
             </Button>
           </div>
         </div>
+      </div>
+    );
+  },
+};
+
+/** Gaya Konsta: `Toast` dikendalikan lewat `opened`. Ganti "Style" di toolbar. */
+export const Declarative: Story = {
+  render: () => {
+    const [opened, setOpened] = useState<"left" | "center" | "right" | null>(
+      null
+    );
+    const POSITIONS = ["left", "center", "right"] as const;
+    const LABELS = { left: "kiri", center: "tengah", right: "kanan" } as const;
+
+    return (
+      <div className="w-[360px]">
+        {POSITIONS.map((position) => (
+          <Toast
+            key={position}
+            position={position}
+            opened={opened === position}
+            button={
+              <Button
+                variant="tertiary"
+                size="sm"
+                onClick={() => setOpened(null)}
+              >
+                Tutup
+              </Button>
+            }
+          >
+            <div className="shrink">Halo, ini toast di {LABELS[position]}!</div>
+          </Toast>
+        ))}
+        <Block inset strong className="gap-4 flex flex-col">
+          <p>
+            Toast memberi umpan balik singkat tentang suatu operasi lewat pesan
+            di layar.
+          </p>
+          {POSITIONS.map((position) => (
+            <Button key={position} onClick={() => setOpened(position)}>
+              Toast di {LABELS[position]}
+            </Button>
+          ))}
+        </Block>
       </div>
     );
   },

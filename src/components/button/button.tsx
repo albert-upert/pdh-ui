@@ -23,8 +23,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: [
-          "bg-primary text-primary-foreground",
-          "ios:active:bg-[color-mix(in_srgb,var(--primary)_85%,black)]",
+          "bg-primary text-white", // color-mix(in_srgb,var(--primary)_85%,black)
+          "ios:active:bg-[color-mix(in_srgb,var(--primary)_85%,black)]", // color-mix(in_srgb,var(--primary)_85%,black)
           "material:hover:bg-[color-mix(in_srgb,var(--primary)_92%,white)]",
           "disabled:bg-black/10 disabled:text-black/30 dark:disabled:bg-white/10 dark:disabled:text-white/30",
         ],

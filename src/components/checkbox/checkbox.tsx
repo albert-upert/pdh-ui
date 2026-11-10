@@ -1,13 +1,13 @@
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import type { ChangeEvent, ComponentProps } from "react";
 import { CheckIcon } from "@/components/icon";
 import { cn } from "@/lib/utils";
 
 export const checkboxVariants = cva(
   // Konsta: iOS bulat 22px berborder 1px, Material persegi 18px berborder 2px
-  "peer relative inline-flex shrink-0 cursor-pointer items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ios:rounded-full ios:border material:rounded-sm material:border-2",
+  "text-white flex shrink-0 items-center justify-center transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 ios:rounded-full ios:border material:rounded-sm material:border-2",
   {
     variants: {
       size: {
@@ -26,61 +26,100 @@ export interface CheckboxProps
     Omit<ComponentProps<"input">, "size" | "type">,
     VariantProps<typeof checkboxVariants> {
   onCheckedChange?: (checked: boolean) => void;
+  /** Keadaan setengah terpilih (garis datar). Mengabaikan tanda centang selama aktif. */
+  indeterminate?: boolean;
+  /**
+   * Elemen pembungkus. Gunakan `"div"` bila checkbox berada di dalam `<label>`
+   * lain, mis. `media` pada `<ListItem label>`.
+   */
+  component?: "label" | "div";
 }
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, size, checked, onCheckedChange, disabled, ...props }, ref) => {
-    const [isChecked, setIsChecked] = useState(checked || false);
-
-    const handleChange = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => {
-        const newChecked = event.target.checked;
-        setIsChecked(newChecked);
-        onCheckedChange?.(newChecked);
-        props.onChange?.(event);
-      },
-      [onCheckedChange, props]
+  (
+    {
+      className,
+      size,
+      checked,
+      defaultChecked,
+      indeterminate = false,
+      component = "label",
+      onChange,
+      onCheckedChange,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const [isChecked, setIsChecked] = useState(
+      checked ?? defaultChecked ?? false
     );
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
-      if (checked !== undefined) {
-        setIsChecked(checked);
-      }
+      if (checked !== undefined) setIsChecked(checked);
     }, [checked]);
 
+    useEffect(() => {
+      if (inputRef.current) inputRef.current.indeterminate = indeterminate;
+    }, [indeterminate]);
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+      setIsChecked(event.target.checked);
+      onCheckedChange?.(event.target.checked);
+      onChange?.(event);
+    };
+
+    const filled = isChecked || indeterminate;
+    const Wrapper = component;
+
     return (
-      <label className="relative inline-flex items-center">
+      <Wrapper
+        data-slot="checkbox"
+        className={cn(
+          "relative inline-flex cursor-pointer align-middle",
+          disabled && "cursor-not-allowed opacity-50"
+        )}
+      >
         <input
-          ref={ref}
+          ref={(el) => {
+            inputRef.current = el;
+            if (typeof ref === "function") ref(el);
+            else if (ref) ref.current = el;
+          }}
           type="checkbox"
-          className="peer absolute opacity-0"
+          className="peer inset-0 m-0 absolute size-full cursor-[inherit] opacity-0"
           checked={isChecked}
-          onChange={handleChange}
           disabled={disabled}
+          aria-checked={indeterminate ? "mixed" : isChecked}
+          onChange={handleChange}
           {...props}
         />
-        <div
-          data-slot="checkbox"
+        <i
+          aria-hidden="true"
+          data-slot="checkbox-box"
           className={cn(
             checkboxVariants({ size }),
-            isChecked
+            filled
               ? "border-primary bg-primary"
               : "ios:border-black/30 ios:dark:border-white/30 bg-transparent material:border-muted-foreground",
-            disabled && "opacity-50",
             className
           )}
         >
-          {isChecked && (
+          {indeterminate ? (
+            <span className="h-0.5 bg-white w-3/4 ios:rounded-full" />
+          ) : (
             <CheckIcon
               className={cn(
-                "text-primary-foreground",
+                "transition-opacity",
+                isChecked ? "opacity-100" : "opacity-0",
                 size === "sm" ? "size-[10px]" : "size-3"
               )}
               strokeWidth={3}
             />
           )}
-        </div>
-      </label>
+        </i>
+      </Wrapper>
     );
   }
 );
